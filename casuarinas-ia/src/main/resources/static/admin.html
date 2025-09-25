@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Las Casuarinas - Panel de Administración</title>
+  <style>
+    body{font-family:Arial, sans-serif; max-width:900px; margin:20px auto; padding:0 16px; background:#fdf6ee;}
+    header{display:flex; justify-content:space-between; align-items:center;}    
+    h1{color:#d35400;}
+    h2{color:#b9770e;}
+    table{width:100%; border-collapse:collapse; margin-top:12px; background:#fff8ee;}
+    th,td{border:1px solid #e67e22; padding:8px; text-align:left;}
+    th{background:#ffe5c2; color:#b9770e;}
+    input,button{padding:6px; margin:4px 0; border-radius:4px; border:1px solid #e67e22;}
+    button{background:#f6b26b; color:#fff; border:none; cursor:pointer; transition:background 0.2s;}
+    button:hover{background:#e67e22;}
+    .row{display:flex; gap:8px; margin:8px 0;}
+    .filtros{display:flex; gap:8px; margin:8px 0; flex-wrap:wrap;}
+    .logout{background:#d35400; color:white; padding:8px 16px; text-decoration:none; border-radius:4px;}
+    .logout:hover{background:#b9770e;}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Las Casuarinas - Panel de gestión</h1>
+    <a href="index.html" class="logout">Cerrar Sesión</a>
+  </header>
+
+  <section>
+    <h2>Productos</h2>
+    <div class="row">
+      <input id="buscarProducto" placeholder="Buscar producto por nombre">      
+      <button onclick="cargarProductos()">Buscar</button>
+      <button onclick="reactivarTodosProductos()" style="background:#27ae60; color:white;">Reactivar Todos</button>
+    </div>
+    <div id="productos"></div>
+    <button onclick="cargarProductos(true)">Actualizar lista</button>
+  </section>
+
+  <section>
+    <h2>Pedidos</h2>
+    <div class="filtros">
+      <input id="filtroCliente" placeholder="Filtrar por cliente" onkeyup="cargarPedidos()">
+      <input id="filtroProducto" placeholder="Filtrar por producto" onkeyup="cargarPedidos()">
+      <select id="filtroLocalidad" onchange="cargarPedidos()">
+        <option value="">Todas las localidades</option>
+        <option>Pocitos</option>
+        <option>Carrasco</option>
+        <option>Solymar/La Tahona</option>
+      </select>
+      <button onclick="cargarPedidos()">Filtrar</button>
+      <button onclick="limpiarFiltrosPedidos()">Limpiar</button>
+    </div>
+    <div id="pedidos"></div>
+  </section>
+
+  <script>
+    // VARIABLE GLOBAL - PROGRAMACIÓN ORIENTADA A OBJETOS
+    // Array para almacenar productos cargados desde la API
+    let productos = [];
+
+    /**
+     * FUNCIÓN ASÍNCRONA - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * Carga productos desde la API REST (que ejecuta consultas SQL)
+     * @param {boolean} force - Si true, recarga desde la API
+     */
+    async function cargarProductos(force){
+      try {
+        // CONSULTA HTTP GET - COMUNICACIÓN CON API REST
+        // La API ejecuta consultas SQL automáticamente via Spring Data JPA
+        // Usa endpoint /admin para obtener todos los productos (activos e inactivos)
+        const res = await fetch('/api/productos/admin');
+        const data = await res.json();
+        
+        // ACTUALIZACIÓN DE VARIABLE GLOBAL - ENCAPSULACIÓN (POO)
+        productos = data;
+        
+        // FILTRADO DE DATOS - PROGRAMACIÓN FUNCIONAL
+        let nombre = document.getElementById('buscarProducto')?.value || '';      
+        let productosFiltrados = productos.filter(p => {
+          return !nombre || p.nombre.toLowerCase().includes(nombre.toLowerCase());
+        });
+        
+        // GENERACIÓN DE HTML - MANIPULACIÓN DEL DOM
+        // Tabla con columna de estado y acciones para activar/desactivar productos
+        let html = '<table><tr><th>ID</th><th>Nombre</th><th>Precio</th><th>Categoría</th><th>Unidad</th><th>Comentario</th><th>Estado</th><th>Acciones</th></tr>';
+        productosFiltrados.forEach(p=>{
+          const estadoTexto = p.activo ? 'Activo' : 'Inactivo';
+          const estadoColor = p.activo ? '#27ae60' : '#e74c3c';
+          const botonTexto = p.activo ? 'Desactivar' : 'Activar';
+          const botonColor = p.activo ? '#e74c3c' : '#27ae60';
+          
+          html += `<tr>
+            <td>${p.id}</td>
+            <td>${p.nombre}</td>
+            <td>$${p.precio}</td>
+            <td>${p.categoria}</td>
+            <td>${p.unidad}</td>
+            <td>${p.comentario||''}</td>
+            <td style="color:${estadoColor}; font-weight:bold;">${estadoTexto}</td>
+            <td><button onclick="toggleActivo(${p.id}, ${p.activo})" style="background:${botonColor}; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">${botonTexto}</button></td>
+          </tr>`;
+        });
+        html += '</table>';
+        document.getElementById('productos').innerHTML = html;
+      } catch (error) {
+        document.getElementById('productos').innerHTML = '<p>Error al cargar productos desde la base de datos</p>';
+        console.error('Error:', error);
+      }
+    }
+
+    /**
+     * FUNCIÓN ASÍNCRONA - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * Carga pedidos desde la API REST (que ejecuta consultas SQL)
+     * Los pedidos se almacenan en la base de datos H2
+     * Aplica filtros de cliente, producto y localidad
+     */
+    async function cargarPedidos(){
+      try {
+        // OBTENCIÓN DE FILTROS - ENCAPSULACIÓN (POO)
+        // Se obtienen los valores de los campos de filtro del DOM
+        const filtroCliente = document.getElementById('filtroCliente')?.value || '';
+        const filtroProducto = document.getElementById('filtroProducto')?.value || '';
+        const filtroLocalidad = document.getElementById('filtroLocalidad')?.value || '';
+        
+        // CONSTRUCCIÓN DE URL CON PARÁMETROS - PROGRAMACIÓN FUNCIONAL
+        // Se construye la URL de la API con los parámetros de filtro
+        let url = '/api/pedidos';
+        const params = new URLSearchParams();
+        
+        if (filtroCliente) params.append('nombreCliente', filtroCliente);
+        if (filtroLocalidad) params.append('localidad', filtroLocalidad);
+        
+        if (params.toString()) {
+          url += '?' + params.toString();
+        }
+        
+        // CONSULTA HTTP GET - COMUNICACIÓN CON API REST
+        // La API ejecuta consultas SQL automáticamente via Spring Data JPA
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        // FILTRADO ADICIONAL POR PRODUCTO - PROGRAMACIÓN FUNCIONAL
+        // Filtro por producto se hace en el cliente ya que los productos están en JSON
+        let pedidosFiltrados = data;
+        if (filtroProducto) {
+          pedidosFiltrados = data.filter(pedido => {
+            try {
+              const items = JSON.parse(pedido.itemsJson || '[]');
+              return items.some(item => 
+                item.nombre && item.nombre.toLowerCase().includes(filtroProducto.toLowerCase())
+              );
+            } catch (e) {
+              return false;
+            }
+          });
+        }
+        
+        // GENERACIÓN DE HTML - MANIPULACIÓN DEL DOM
+        // Tabla que muestra datos de pedidos desde la base de datos
+        let html = '<table><tr><th>ID</th><th>Cliente</th><th>Teléfono</th><th>Dirección</th><th>Localidad</th><th>Total</th><th>Creado</th><th>Ubicación</th><th>Acciones</th></tr>';
+        pedidosFiltrados.forEach(o=>{
+          html += `<tr>
+            <td>${o.id}</td><td>${o.nombreCliente}</td><td>${o.telefono||''}</td><td>${o.direccion||''}</td>
+            <td>${o.localidad||''}</td><td>$${o.total}</td><td>${new Date(o.creado).toLocaleString()}</td><td>${o.ubicacion||''}</td>
+            <td><button onclick="borrarPedido(${o.id})">Eliminar</button></td>    
+          </tr>`;
+        });
+        html += '</table>';
+        document.getElementById('pedidos').innerHTML = html;
+      } catch (error) {
+        document.getElementById('pedidos').innerHTML = '<p>Error al cargar pedidos desde la base de datos</p>';
+        console.error('Error:', error);
+      }
+    }
+
+    /**
+     * FUNCIÓN ASÍNCRONA - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * Elimina un pedido de la base de datos mediante API REST
+     * @param {number} id - ID del pedido a eliminar
+     */
+    async function borrarPedido(id){
+      if(confirm('¿Seguro que querés eliminar el pedido '+id+'?')){
+        try {
+          // CONSULTA HTTP DELETE - COMUNICACIÓN CON API REST
+          // La API ejecuta consulta SQL DELETE automáticamente via Spring Data JPA
+          await fetch('/api/pedidos/'+id,{method:'DELETE'});
+          // RECARGA DE DATOS - ACTUALIZACIÓN DE LA INTERFAZ
+          cargarPedidos();
+        } catch (error) {
+          alert('Error al eliminar el pedido de la base de datos');
+          console.error('Error:', error);
+        }
+      }
+    }
+
+    /**
+     * FUNCIÓN PARA LIMPIAR FILTROS - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * Limpia todos los campos de filtro y recarga los pedidos
+     * Implementa el patrón de limpieza de estado
+     */
+    function limpiarFiltrosPedidos(){
+      // LIMPIEZA DE CAMPOS - MANIPULACIÓN DEL DOM
+      document.getElementById('filtroCliente').value = '';
+      document.getElementById('filtroProducto').value = '';
+      document.getElementById('filtroLocalidad').value = '';
+      
+      // RECARGA DE DATOS - ACTUALIZACIÓN DE LA INTERFAZ
+      cargarPedidos();
+    }
+
+    /**
+     * FUNCIÓN ASÍNCRONA - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * Cambia el estado activo/inactivo de un producto en la base de datos
+     * @param {number} id - ID del producto a modificar
+     * @param {boolean} estadoActual - Estado actual del producto (true=activo, false=inactivo)
+     */
+    async function toggleActivo(id, estadoActual) {
+      const nuevoEstado = !estadoActual;
+      const accion = nuevoEstado ? 'activar' : 'desactivar';
+      
+      if (confirm(`¿Seguro que querés ${accion} este producto?`)) {
+        try {
+          // OBTENER PRODUCTO ACTUAL - ENCAPSULACIÓN (POO)
+          // Se busca el producto en el array local para obtener todos sus datos
+          const producto = productos.find(p => p.id === id);
+          if (!producto) {
+            alert('Producto no encontrado');
+            return;
+          }
+          
+          // ACTUALIZAR ESTADO - MUTACIÓN DE OBJETO (POO)
+          // Se modifica el campo activo del objeto producto
+          producto.activo = nuevoEstado;
+          
+          // CONSULTA HTTP PUT - COMUNICACIÓN CON API REST
+          // La API ejecuta consulta SQL UPDATE automáticamente via Spring Data JPA
+          const response = await fetch(`/api/productos/${id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(producto)
+          });
+          
+          if (response.ok) {
+            // RECARGA DE DATOS - ACTUALIZACIÓN DE LA INTERFAZ
+            // Se recarga la tabla para mostrar el nuevo estado
+            cargarProductos();
+            alert(`Producto ${accion}do exitosamente`);
+          } else {
+            alert(`Error al ${accion} el producto`);
+          }
+        } catch (error) {
+          alert(`Error al ${accion} el producto en la base de datos`);
+          console.error('Error:', error);
+        }
+      }
+    }
+
+    /**
+     * FUNCIÓN ASÍNCRONA - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * Reactiva todos los productos desactivados en la base de datos
+     * Implementa el patrón de operación en lote (Batch Operation)
+     */
+    async function reactivarTodosProductos() {
+      if (confirm('¿Seguro que querés reactivar TODOS los productos desactivados?')) {
+        try {
+          // FILTRAR PRODUCTOS DESACTIVADOS - PROGRAMACIÓN FUNCIONAL
+          // Se identifican todos los productos que están desactivados
+          const productosDesactivados = productos.filter(p => !p.activo);
+          
+          if (productosDesactivados.length === 0) {
+            alert('No hay productos desactivados para reactivar');
+            return;
+          }
+          
+          // PROCESAMIENTO EN LOTE - PROGRAMACIÓN ORIENTADA A OBJETOS
+          // Se procesan todos los productos desactivados en paralelo
+          const promesas = productosDesactivados.map(async (producto) => {
+            // ACTUALIZAR ESTADO - MUTACIÓN DE OBJETO (POO)
+            producto.activo = true;
+            
+            // CONSULTA HTTP PUT - COMUNICACIÓN CON API REST
+            // La API ejecuta consulta SQL UPDATE automáticamente via Spring Data JPA
+            const response = await fetch(`/api/productos/${producto.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(producto)
+            });
+            
+            return response.ok;
+          });
+          
+          // ESPERAR COMPLETACIÓN DE TODAS LAS OPERACIONES - SINCRONIZACIÓN
+          const resultados = await Promise.all(promesas);
+          const exitosos = resultados.filter(r => r).length;
+          
+          if (exitosos === productosDesactivados.length) {
+            // RECARGA DE DATOS - ACTUALIZACIÓN DE LA INTERFAZ
+            cargarProductos();
+            alert(`¡Excelente! Se reactivaron ${exitosos} productos exitosamente`);
+          } else {
+            alert(`Se reactivaron ${exitosos} de ${productosDesactivados.length} productos. Revisa los errores.`);
+            cargarProductos();
+          }
+        } catch (error) {
+          alert('Error al reactivar productos en la base de datos');
+          console.error('Error:', error);
+        }
+      }
+    }
+
+    // INICIALIZACIÓN DE LA PÁGINA - PROGRAMACIÓN ORIENTADA A OBJETOS
+    // Carga datos iniciales desde la base de datos al cargar la página
+    cargarProductos();
+    cargarPedidos();
+  </script>
+</body>
+</html>

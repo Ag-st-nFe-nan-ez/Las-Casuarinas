@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Las Casuarinas - Cliente</title>
+  <style>
+    body{font-family:Arial, sans-serif; max-width:900px; margin:20px auto; padding:0 16px; background:#fdf6ee;}
+    header{display:flex; justify-content:space-between; align-items:center;}    
+    h1{color:#d35400;}
+    h2{color:#b9770e;}
+    table{width:100%; border-collapse:collapse; margin-top:12px; background:#fff8ee;}
+    th,td{border:1px solid #e67e22; padding:8px; text-align:left;}
+    th{background:#ffe5c2; color:#b9770e;}
+    input,button,select{padding:6px; margin:4px 0; border-radius:4px; border:1px solid #e67e22;}
+    button{background:#f6b26b; color:#fff; border:none; cursor:pointer; transition:background 0.2s;}
+    button:hover{background:#e67e22;}
+    .row{display:flex; gap:8px; margin:8px 0; flex-wrap:wrap;}
+    .section{background:white; padding:20px; margin:20px 0; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+    .carrito-item{display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;}
+    .carrito-total{font-weight:bold; font-size:18px; color:#d35400; margin-top:10px;}
+    .hidden{display:none;}
+    .form-group{margin:10px 0;}
+    .form-group label{display:block; margin-bottom:5px; font-weight:bold;}
+    .form-group input, .form-group select{width:100%;}
+    .back-btn{background:#d35400; color:white; padding:8px 16px; text-decoration:none; border-radius:4px;}
+    .back-btn:hover{background:#b9770e;}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Las Casuarinas - Tienda</h1>
+    <a href="index.html" class="back-btn">Volver</a>
+  </header>
+
+  <!-- ¿Sección de Registro -->
+  <div class="section" id="registroSection">
+    <h2>Registro de Cliente</h2>
+    <form id="registroForm">
+      <div class="form-group">
+        <label>Nombre Completo:</label>
+        <input type="text" id="nombreCliente" required>
+      </div>
+      <div class="form-group">
+        <label>Teléfono:</label>
+        <input type="tel" id="telefonoCliente" required>
+      </div>
+      <div class="form-group">
+        <label>Dirección:</label>
+        <input type="text" id="direccionCliente" required>
+      </div>
+      <div class="form-group">
+        <label>Localidad:</label>
+        <select id="localidadCliente" required>
+          <option value="">Seleccione una localidad</option>
+          <option value="Pocitos">Pocitos</option>
+          <option value="Carrasco">Carrasco</option>
+          <option value="Solymar/La Tahona">Solymar/La Tahona</option>
+        </select>
+      </div>
+      <button type="submit">Continuar a la Tienda</button>
+    </form>
+  </div>
+
+  <!-- Sección de Tienda -->
+  <div class="section hidden" id="tiendaSection">
+    <h2>Nuestros Productos</h2>
+    <div class="row">
+      <input id="buscarProducto" placeholder="Buscar producto por nombre">      
+      <select id="filtroCategoria">
+        <option value="">Todas las categorías</option>
+        <option value="Huevos">Huevos</option>
+        <option value="Quesos">Quesos</option>
+        <option value="Lácteos">Lácteos</option>
+        <option value="Miel">Miel</option>
+      </select>
+      <button onclick="cargarProductos()">Buscar</button>
+    </div>
+    <div id="productos"></div>
+  </div>
+
+  <!-- Sección de Carrito -->
+  <div class="section hidden" id="carritoSection">
+    <h2>Mi Carrito</h2>
+    <div id="carrito"></div>
+    <div class="carrito-total" id="totalCarrito">Total: $0</div>
+    <button onclick="finalizarPedido()" id="finalizarBtn" disabled>Finalizar Pedido</button>
+  </div>
+
+  <script>
+    // VARIABLES GLOBALES - PROGRAMACIÓN ORIENTADA A OBJETOS
+    // Objeto para almacenar datos del cliente (encapsulación)
+    let clienteData = {};
+    // Array para el carrito de compras (estructura de datos)
+    let carrito = [];
+    // Array para productos cargados desde la API
+    let productos = [];
+
+    /**
+     * FUNCIÓN ASÍNCRONA - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * Carga productos desde la API REST (que ejecuta consultas SQL)
+     */
+    async function cargarProductosDesdeAPI() {
+      try {
+        // CONSULTA HTTP GET - COMUNICACIÓN CON API REST
+        // La API ejecuta consultas SQL automáticamente via Spring Data JPA
+        const res = await fetch('/api/productos');
+        const data = await res.json();
+        productos = data;
+        mostrarProductos();
+      } catch (error) {
+        console.error('Error al cargar productos:', error);
+        document.getElementById('productos').innerHTML = '<p>Error al cargar productos desde la base de datos</p>';
+      }
+    }
+
+    // Manejar registro
+    document.getElementById('registroForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      clienteData = {
+        nombre: document.getElementById('nombreCliente').value,
+        telefono: document.getElementById('telefonoCliente').value,
+        direccion: document.getElementById('direccionCliente').value,
+        localidad: document.getElementById('localidadCliente').value
+      };
+      
+      document.getElementById('registroSection').classList.add('hidden');
+      document.getElementById('tiendaSection').classList.remove('hidden');
+      document.getElementById('carritoSection').classList.remove('hidden');
+      
+      cargarProductosDesdeAPI();
+    });
+
+    /**
+     * FUNCIÓN - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * Muestra los productos cargados desde la API
+     */
+    function mostrarProductos() {
+      cargarProductos();
+    }
+
+    /**
+     * FUNCIÓN - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * Filtra y muestra productos (sin control de stock)
+     */
+    function cargarProductos(){
+      let nombre = document.getElementById('buscarProducto')?.value || '';
+      let categoria = document.getElementById('filtroCategoria')?.value || '';
+      
+      // FILTRADO DE DATOS - PROGRAMACIÓN FUNCIONAL
+      let productosFiltrados = productos.filter(p => {
+        const matchNombre = !nombre || p.nombre.toLowerCase().includes(nombre.toLowerCase());
+        const matchCategoria = !categoria || p.categoria === categoria;
+        return matchNombre && matchCategoria;
+      });
+      
+      // GENERACIÓN DE HTML - MANIPULACIÓN DEL DOM
+      // Tabla sin columna de stock (eliminada según requerimiento)
+      let html = '<table><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Cantidad</th><th>Acción</th></tr>';
+      productosFiltrados.forEach(p=>{
+        html += `<tr>
+          <td><strong>${p.nombre}</strong><br><small>${p.comentario||''} (${p.unidad||''})</small></td>
+          <td>${p.categoria||''}</td>
+          <td>$${p.precio}</td>
+          <td><input type="number" id="cant_${p.id}" min="1" value="1" style="width:60px;"></td>
+          <td><button onclick="agregarAlCarrito(${p.id}, '${p.nombre}', ${p.precio})">Agregar</button></td>
+        </tr>`;
+      });
+      html += '</table>';
+      document.getElementById('productos').innerHTML = html;
+    }
+
+    /**
+     * FUNCIÓN - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * Agrega un producto al carrito de compras
+     * @param {number} productoId - ID del producto
+     * @param {string} nombre - Nombre del producto
+     * @param {number} precio - Precio del producto
+     */
+    function agregarAlCarrito(productoId, nombre, precio) {
+      const cantidad = parseInt(document.getElementById(`cant_${productoId}`).value);
+      if (cantidad <= 0) return;
+
+      // BÚSQUEDA EN ARRAY - PROGRAMACIÓN FUNCIONAL
+      const itemExistente = carrito.find(item => item.id === productoId);
+      if (itemExistente) {
+        // MODIFICACIÓN DE OBJETO EXISTENTE - ENCAPSULACIÓN (POO)
+        itemExistente.cantidad += cantidad;
+      } else {
+        // CREACIÓN DE NUEVO OBJETO - INSTANCIACIÓN (POO)
+        carrito.push({
+          id: productoId,
+          nombre: nombre,
+          precio: precio,
+          cantidad: cantidad
+        });
+      }
+
+      actualizarCarrito();
+    }
+
+    function actualizarCarrito() {
+      const carritoDiv = document.getElementById('carrito');
+      if (carrito.length === 0) {
+        carritoDiv.innerHTML = '<p>Tu carrito está vacío</p>';
+        document.getElementById('finalizarBtn').disabled = true;
+        return;
+      }
+
+      let html = '';
+      let total = 0;
+      carrito.forEach(item => {
+        const subtotal = item.precio * item.cantidad;
+        total += subtotal;
+        html += `<div class="carrito-item">
+          <div>
+            <strong>${item.nombre}</strong><br>
+            <small>$${item.precio} x ${item.cantidad}</small>
+          </div>
+          <div>
+            <span>$${subtotal}</span>
+            <button onclick="quitarDelCarrito(${item.id})" style="margin-left:10px; background:#d35400;">Quitar</button>
+          </div>
+        </div>`;
+      });
+      
+      carritoDiv.innerHTML = html;
+      document.getElementById('totalCarrito').textContent = `Total: $${total}`;
+      document.getElementById('finalizarBtn').disabled = false;
+    }
+
+    function quitarDelCarrito(productoId) {
+      carrito = carrito.filter(item => item.id !== productoId);
+      actualizarCarrito();
+    }
+
+    /**
+     * FUNCIÓN ASÍNCRONA - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * Finaliza el pedido enviándolo a la base de datos via API REST
+     */
+    async function finalizarPedido() {
+      if (carrito.length === 0) return;
+
+      // CREACIÓN DE OBJETO PEDIDO - INSTANCIACIÓN (POO)
+      const pedido = {
+        nombreCliente: clienteData.nombre,
+        telefono: clienteData.telefono,
+        direccion: clienteData.direccion,
+        localidad: clienteData.localidad,
+        itemsJson: JSON.stringify(carrito), // SERIALIZACIÓN JSON
+        total: carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0), // CÁLCULO FUNCIONAL
+        ubicacion: clienteData.localidad,
+        creado: new Date().toISOString()
+      };
+
+      try {
+        // CONSULTA HTTP POST - COMUNICACIÓN CON API REST
+        // La API ejecuta consulta SQL INSERT automáticamente via Spring Data JPA
+        const response = await fetch('/api/pedidos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(pedido) // SERIALIZACIÓN JSON
+        });
+
+        if (response.ok) {
+          alert('¡Pedido realizado con éxito! Te contactaremos pronto.');
+          // LIMPIEZA DEL CARRITO - RESET DE ESTADO (POO)
+          carrito = [];
+          actualizarCarrito();
+        } else {
+          alert('Error al realizar el pedido. Intenta nuevamente.');
+        }
+      } catch (error) {
+        alert('Error al conectar con el servidor.');
+        console.error('Error:', error);
+      }
+    }
+
+    // INICIALIZACIÓN DE LA PÁGINA - PROGRAMACIÓN ORIENTADA A OBJETOS
+    // Carga productos desde la base de datos al cargar la página
+    cargarProductosDesdeAPI();
+  </script>
+</body>
+</html>

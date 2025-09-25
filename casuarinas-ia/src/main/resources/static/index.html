@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Las Casuarinas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #fdf6ee;
+      text-align: center;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #d35400;
+      margin-bottom: 30px;
+    }
+    .option {
+      display: block;
+      width: 100%;
+      padding: 20px;
+      margin: 20px 0;
+      background: #f6b26b;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 20px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .option:hover {
+      background: #e67e22;
+    }
+    .admin-section {
+      margin-top: 30px;
+      padding: 20px;
+      background: #fff8ee;
+      border-radius: 5px;
+      display: none;
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #e67e22;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      background: #d35400;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #b9770e;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Las Casuarinas</h1>
+    <p>Bienvenido a nuestra tienda de productos frescos</p>
+    
+    <a href="cliente.html" class="option">Soy Cliente</a>
+    <a href="#" onclick="showAdminLogin()" class="option">Soy Administrador</a>
+    
+    <div class="admin-section" id="adminSection">
+      <h3>Acceso de Administrador</h3>
+      <input type="password" id="adminPassword" placeholder="Ingrese la contraseña">
+      <button onclick="checkAdminPassword()">Ingresar</button>
+      <div id="errorMessage" class="error"></div>
+    </div>
+  </div>
+
+  <script>
+    function showAdminLogin() {
+      document.getElementById('adminSection').style.display = 'block';
+    }
+    
+    function checkAdminPassword() {
+      const password = document.getElementById('adminPassword').value;
+      const errorDiv = document.getElementById('errorMessage');
+      
+      if (password === 'Nana.1234') {
+        window.location.href = 'admin.html';
+      } else {
+        errorDiv.textContent = 'Contraseña incorrecta';
+        document.getElementById('adminPassword').value = '';
+      }
+    }
+    
+    // Permitir enter en el campo de contraseña
+    document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        checkAdminPassword();
+      }
+    });
+  </script>
+</body>
+</html>

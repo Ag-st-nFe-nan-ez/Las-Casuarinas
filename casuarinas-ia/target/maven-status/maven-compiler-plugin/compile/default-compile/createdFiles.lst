@@ -1,0 +1,12 @@
+com\casuarinas\app\model\Huevos12.class
+com\casuarinas\app\model\Cliente.class
+com\casuarinas\app\web\ProductoController.class
+com\casuarinas\app\App.class
+com\casuarinas\app\repo\ClienteRepo.class
+com\casuarinas\app\model\Pedido.class
+com\casuarinas\app\model\Producto.class
+com\casuarinas\app\repo\ProductoRepo.class
+com\casuarinas\app\boot\DataLoader.class
+com\casuarinas\app\web\PedidoController.class
+com\casuarinas\app\web\ClienteController.class
+com\casuarinas\app\repo\PedidoRepo.class

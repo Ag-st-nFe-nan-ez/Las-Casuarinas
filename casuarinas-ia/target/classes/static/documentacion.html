@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación Técnica - Las Casuarinas IA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #d35400 0%, #e67e22 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .nav {
+            background: #34495e;
+            padding: 15px;
+            text-align: center;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: background 0.3s;
+        }
+        .nav a:hover {
+            background: #e67e22;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #e67e22;
+        }
+        .section h2 {
+            color: #d35400;
+            margin-top: 0;
+            font-size: 1.8em;
+            border-bottom: 2px solid #e67e22;
+            padding-bottom: 10px;
+        }
+        .section h3 {
+            color: #2c3e50;
+            margin-top: 25px;
+        }
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .highlight {
+            background: #f39c12;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .concept-box {
+            background: #e8f4fd;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .concept-box h4 {
+            color: #2980b9;
+            margin-top: 0;
+        }
+        .file-structure {
+            background: #f1f2f6;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: monospace;
+        }
+        .toc {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            color: #e67e22;
+        }
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #e67e22;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .back-button:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Volver a Las Casuarinas</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📚 Documentación Técnica</h1>
+            <p>Sistema de Gestión Las Casuarinas - Explicación Completa de POO y SQL</p>
+        </div>
+
+        <div class="nav">
+            <a href="#introduccion">Introducción</a>
+            <a href="#arquitectura">Arquitectura</a>
+            <a href="#poo">Programación Orientada a Objetos</a>
+            <a href="#sql">Base de Datos SQL</a>
+            <a href="#codigo">Análisis de Código</a>
+            <a href="#patrones">Patrones de Diseño</a>
+        </div>
+
+        <div class="content">
+            <div class="toc">
+                <h3>📋 Índice de Contenidos</h3>
+                <ul>
+                    <li><a href="#introduccion">1. Introducción al Proyecto</a></li>
+                    <li><a href="#arquitectura">2. Arquitectura del Sistema</a></li>
+                    <li><a href="#poo">3. Conceptos de Programación Orientada a Objetos</a></li>
+                    <li><a href="#sql">4. Conceptos de Base de Datos SQL</a></li>
+                    <li><a href="#codigo">5. Análisis Detallado del Código</a></li>
+                    <li><a href="#patrones">6. Patrones de Diseño Implementados</a></li>
+                </ul>
+            </div>
+
+            <div id="introduccion" class="section">
+                <h2>🎯 1. Introducción al Proyecto</h2>
+                <p>El sistema <strong>Las Casuarinas IA</strong> es una aplicación web desarrollada con <span class="highlight">Spring Boot</span> que implementa un sistema de gestión de productos y pedidos para una tienda de productos naturales.</p>
+                
+                <div class="concept-box">
+                    <h4>🎯 Objetivos del Proyecto</h4>
+                    <ul>
+                        <li>Demostrar conceptos de <strong>Programación Orientada a Objetos (POO)</strong></li>
+                        <li>Implementar operaciones de <strong>Base de Datos SQL</strong> usando JPA/Hibernate</li>
+                        <li>Crear una <strong>API REST</strong> funcional</li>
+                        <li>Desarrollar una <strong>interfaz web</strong> interactiva</li>
+                        <li>Mostrar patrones de diseño en la práctica</li>
+                    </ul>
+                </div>
+
+                <h3>🛠️ Tecnologías Utilizadas</h3>
+                <div class="code-block">
+<strong>Backend:</strong>
+- Java 17
+- Spring Boot 3.2.5
+- Spring Data JPA
+- Hibernate ORM
+- H2 Database
+- Maven
+
+<strong>Frontend:</strong>
+- HTML5
+- CSS3
+- JavaScript ES6+
+- Fetch API
+
+<strong>Base de Datos:</strong>
+- H2 (In-memory + File-based)
+- SQL (DDL, DML, DQL)
+</div>
+            </div>
+
+            <div id="arquitectura" class="section">
+                <h2>🏗️ 2. Arquitectura del Sistema</h2>
+                
+                <h3>📁 Estructura del Proyecto</h3>
+                <div class="file-structure">
+src/
+├── main/
+│   ├── java/com/casuarinas/app/
+│   │   ├── App.java                    # Clase principal Spring Boot
+│   │   ├── model/                      # Entidades (POO)
+│   │   │   ├── Producto.java           # Entidad base
+│   │   │   ├── Pedido.java             # Entidad pedidos
+│   │   │   ├── Cliente.java            # Entidad clientes
+│   │   │   └── [Productos específicos] # Miel, Huevos12, etc.
+│   │   ├── repo/                       # Repositorios (Data Access)
+│   │   │   ├── ProductoRepo.java       # Acceso a datos productos
+│   │   │   ├── PedidoRepo.java         # Acceso a datos pedidos
+│   │   │   └── ClienteRepo.java        # Acceso a datos clientes
+│   │   ├── web/                        # Controladores REST
+│   │   │   ├── ProductoController.java # API productos
+│   │   │   ├── PedidoController.java   # API pedidos
+│   │   │   └── ClienteController.java  # API clientes
+│   │   └── boot/                       # Configuración inicial
+│   │       └── DataLoader.java         # Carga datos iniciales
+│   └── resources/
+│       ├── application.properties      # Configuración BD
+│       └── static/                     # Archivos web
+│           ├── index.html              # Página principal
+│           ├── admin.html              # Panel administración
+│           └── documentacion.html      # Esta documentación
+└── pom.xml                            # Configuración Maven
+</div>
+
+                <h3>🔄 Flujo de Datos</h3>
+                <div class="concept-box">
+                    <h4>📊 Flujo Completo del Sistema</h4>
+                    <ol>
+                        <li><strong>Cliente Web</strong> → Solicita página HTML</li>
+                        <li><strong>Spring Boot</strong> → Sirve archivos estáticos</li>
+                        <li><strong>JavaScript</strong> → Hace peticiones AJAX a API REST</li>
+                        <li><strong>Controladores</strong> → Procesan peticiones HTTP</li>
+                        <li><strong>Repositorios</strong> → Acceden a base de datos</li>
+                        <li><strong>Hibernate</strong> → Genera consultas SQL automáticamente</li>
+                        <li><strong>H2 Database</strong> → Ejecuta consultas y devuelve datos</li>
+                        <li><strong>JSON Response</strong> → Datos vuelven al frontend</li>
+                        <li><strong>DOM Update</strong> → Interfaz se actualiza dinámicamente</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div id="poo" class="section">
+                <h2>🎯 3. Conceptos de Programación Orientada a Objetos</h2>
+                
+                <h3>🏛️ Principios Fundamentales de POO</h3>
+                
+                <div class="concept-box">
+                    <h4>1. 📦 Encapsulación (Encapsulation)</h4>
+                    <p><strong>Definición:</strong> Ocultar los detalles internos de una clase y exponer solo lo necesario.</p>
+                    <p><strong>En nuestro código:</strong></p>
+                    <div class="code-block">
+// Ejemplo en Producto.java
+public class Producto {
+    private Long id;           // Campo privado - no accesible desde fuera
+    private String nombre;     // Campo privado
+    private Double precio;     // Campo privado
+    
+    // Métodos públicos para acceder a los datos privados
+    public Long getId() { return id; }           // Getter
+    public void setId(Long id) { this.id = id; } // Setter
+}
+                    </div>
+                    <p><strong>Beneficio:</strong> Control total sobre cómo se accede y modifica la información.</p>
+                </div>
+
+                <div class="concept-box">
+                    <h4>2. 🧬 Herencia (Inheritance)</h4>
+                    <p><strong>Definición:</strong> Una clase puede heredar propiedades y métodos de otra clase.</p>
+                    <p><strong>En nuestro código:</strong></p>
+                    <div class="code-block">
+// ProductoRepo hereda de JpaRepository
+public interface ProductoRepo extends JpaRepository&lt;Producto, Long&gt; {
+    // Hereda métodos como: save(), findAll(), deleteById(), etc.
+    // Y agrega métodos específicos
+    List&lt;Producto&gt; findByNombreContainingIgnoreCase(String nombre);
+}
+                    </div>
+                    <p><strong>Beneficio:</strong> Reutilización de código y extensibilidad.</p>
+                </div>
+
+                <div class="concept-box">
+                    <h4>3. 🔄 Polimorfismo (Polymorphism)</h4>
+                    <p><strong>Definición:</strong> Un objeto puede comportarse de diferentes maneras según el contexto.</p>
+                    <p><strong>En nuestro código:</strong></p>
+                    <div class="code-block">
+// @RestController implementa la interfaz de controlador de Spring
+@RestController
+public class ProductoController {
+    // El mismo método puede manejar diferentes tipos de peticiones
+    @GetMapping
+    public List&lt;Producto&gt; getAll() { ... }
+    
+    @PostMapping  
+    public Producto create(@RequestBody Producto producto) { ... }
+}
+                    </div>
+                    <p><strong>Beneficio:</strong> Flexibilidad y código más mantenible.</p>
+                </div>
+
+                <div class="concept-box">
+                    <h4>4. 🔧 Abstracción (Abstraction)</h4>
+                    <p><strong>Definición:</strong> Ocultar la complejidad y mostrar solo las características esenciales.</p>
+                    <p><strong>En nuestro código:</strong></p>
+                    <div class="code-block">
+// @Entity abstrae la complejidad de mapeo objeto-relacional
+@Entity
+@Table(name = "producto")
+public class Producto {
+    // Spring Boot maneja automáticamente:
+    // - Creación de tabla SQL
+    // - Mapeo de campos
+    // - Consultas automáticas
+}
+                    </div>
+                    <p><strong>Beneficio:</strong> Simplifica el desarrollo y reduce la complejidad.</p>
+                </div>
+
+                <h3>🏗️ Patrones de Diseño Implementados</h3>
+                
+                <div class="concept-box">
+                    <h4>1. 🏭 Patrón Factory</h4>
+                    <p><strong>Definición:</strong> Crea objetos sin especificar su clase exacta.</p>
+                    <div class="code-block">
+// @SpringBootApplication actúa como Factory
+@SpringBootApplication
+public class App {
+    public static void main(String[] args) {
+        // Spring crea automáticamente todos los beans necesarios
+        SpringApplication.run(App.class, args);
+    }
+}
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4>2. 💉 Patrón Dependency Injection</h4>
+                    <p><strong>Definición:</strong> Las dependencias se inyectan desde afuera, no se crean internamente.</p>
+                    <div class="code-block">
+@RestController
+public class ProductoController {
+    @Autowired  // Spring inyecta automáticamente esta dependencia
+    private ProductoRepo repo;
+    
+    // No necesitamos: repo = new ProductoRepo();
+    // Spring lo hace por nosotros
+}
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4>3. 🎯 Patrón MVC (Model-View-Controller)</h4>
+                    <p><strong>Definición:</strong> Separa la lógica de negocio, presentación y control.</p>
+                    <div class="code-block">
+<strong>Model:</strong> Producto.java, Pedido.java (Entidades)
+<strong>View:</strong> index.html, admin.html (Interfaz web)  
+<strong>Controller:</strong> ProductoController.java (Lógica de control)
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4>4. 📚 Patrón Repository</h4>
+                    <p><strong>Definición:</strong> Abstrae la lógica de acceso a datos.</p>
+                    <div class="code-block">
+public interface ProductoRepo extends JpaRepository&lt;Producto, Long&gt; {
+    // Abstrae todas las operaciones de base de datos
+    List&lt;Producto&gt; findByActivoTrue();
+    List&lt;Producto&gt; findByCategoria(String categoria);
+    // Spring genera automáticamente la implementación
+}
+                    </div>
+                </div>
+            </div>
+
+            <div id="sql" class="section">
+                <h2>🗄️ 4. Conceptos de Base de Datos SQL</h2>
+                
+                <h3>📊 Tipos de Consultas SQL</h3>
+                
+                <div class="concept-box">
+                    <h4>1. 📝 DDL (Data Definition Language)</h4>
+                    <p><strong>Definición:</strong> Comandos para definir la estructura de la base de datos.</p>
+                    <div class="code-block">
+-- CREATE TABLE (creado automáticamente por Hibernate)
+CREATE TABLE producto (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255),
+    precio DOUBLE,
+    activo BOOLEAN,
+    creado TIMESTAMP,
+    actualizado TIMESTAMP
+);
+
+-- ALTER TABLE (modificaciones de estructura)
+ALTER TABLE producto ADD COLUMN categoria VARCHAR(100);
+                    </div>
+                    <p><strong>En nuestro código:</strong> Hibernate genera automáticamente estas consultas basándose en las anotaciones @Entity.</p>
+                </div>
+
+                <div class="concept-box">
+                    <h4>2. 🔍 DQL (Data Query Language)</h4>
+                    <p><strong>Definición:</strong> Comandos para consultar datos.</p>
+                    <div class="code-block">
+-- SELECT básico
+SELECT * FROM producto WHERE activo = true;
+
+-- SELECT con filtros
+SELECT * FROM producto 
+WHERE nombre LIKE '%miel%' 
+AND categoria = 'Miel' 
+AND activo = true;
+
+-- SELECT con ordenamiento
+SELECT * FROM producto 
+ORDER BY precio DESC, nombre ASC;
+                    </div>
+                    <p><strong>En nuestro código:</strong> Los métodos del repositorio generan automáticamente estas consultas.</p>
+                </div>
+
+                <div class="concept-box">
+                    <h4>3. ✏️ DML (Data Manipulation Language)</h4>
+                    <p><strong>Definición:</strong> Comandos para modificar datos.</p>
+                    <div class="code-block">
+-- INSERT (crear nuevos registros)
+INSERT INTO producto (nombre, precio, activo, creado) 
+VALUES ('Miel', 330.0, true, CURRENT_TIMESTAMP);
+
+-- UPDATE (modificar registros existentes)
+UPDATE producto 
+SET activo = false, actualizado = CURRENT_TIMESTAMP 
+WHERE id = 1;
+
+-- DELETE (eliminar registros)
+DELETE FROM producto WHERE id = 1;
+                    </div>
+                    <p><strong>En nuestro código:</strong> Los métodos save() y deleteById() ejecutan estas operaciones.</p>
+                </div>
+
+                <h3>🔗 Mapeo Objeto-Relacional (ORM)</h3>
+                
+                <div class="concept-box">
+                    <h4>📋 Anotaciones JPA/Hibernate</h4>
+                    <div class="code-block">
+@Entity                    // Marca la clase como entidad de base de datos
+@Table(name = "producto")  // Especifica el nombre de la tabla
+public class Producto {
+    @Id                     // Marca como clave primaria
+    @GeneratedValue         // Generación automática de ID
+    private Long id;
+    
+    @Column(name = "nombre") // Mapea a columna específica
+    private String nombre;
+    
+    @Lob                    // Para campos de texto largo (CLOB)
+    private String comentario;
+    
+    @PreUpdate              // Ejecuta antes de actualizar
+    public void preUpdate() {
+        this.actualizado = LocalDateTime.now();
+    }
+}
+                    </div>
+                </div>
+
+                <h3>🔄 Transacciones</h3>
+                <div class="concept-box">
+                    <h4>⚡ Gestión Automática de Transacciones</h4>
+                    <p><strong>Definición:</strong> Spring maneja automáticamente las transacciones de base de datos.</p>
+                    <div class="code-block">
+@Transactional  // Spring maneja la transacción automáticamente
+public Producto save(Producto producto) {
+    // Si algo falla, toda la operación se revierte (ROLLBACK)
+    // Si todo va bien, se confirma (COMMIT)
+    return productoRepo.save(producto);
+}
+                    </div>
+                </div>
+            </div>
+
+            <div id="codigo" class="section">
+                <h2>💻 5. Análisis Detallado del Código</h2>
+                
+                <h3>🏠 Clase Principal - App.java</h3>
+                <div class="code-block">
+package com.casuarinas.app;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * CLASE PRINCIPAL SPRING BOOT - PROGRAMACIÓN ORIENTADA A OBJETOS
+ * 
+ * Esta es la clase de entrada de la aplicación Spring Boot.
+ * Implementa el patrón Singleton y Factory para la inicialización.
+ * 
+ * RELACIÓN CON POO:
+ * - @SpringBootApplication: Anotación que configura automáticamente la aplicación
+ * - Singleton: Solo existe una instancia de la aplicación
+ * - Factory: Spring crea todos los beans necesarios
+ * - Main Method: Punto de entrada estático
+ * 
+ * RELACIÓN CON SQL:
+ * - Configura automáticamente la conexión a base de datos H2
+ * - Inicializa JPA/Hibernate para mapeo objeto-relacional
+ * - Crea las tablas SQL automáticamente
+ */
+@SpringBootApplication  // ANOTACIÓN SPRING: Configuración automática
+public class App {
+    public static void main(String[] args) {
+        // MÉTODO MAIN - PUNTO DE ENTRADA DE LA APLICACIÓN
+        // Spring Boot inicializa automáticamente:
+        // - Servidor web embebido (Tomcat)
+        // - Conexión a base de datos
+        // - Configuración JPA/Hibernate
+        // - Carga de beans y dependencias
+        SpringApplication.run(App.class, args);
+    }
+}
+                </div>
+
+                <h3>📦 Entidad Base - Producto.java</h3>
+                <div class="code-block">
+package com.casuarinas.app.model;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+/**
+ * ENTIDAD PRODUCTO - PROGRAMACIÓN ORIENTADA A OBJETOS
+ * 
+ * Esta clase representa un producto en el sistema.
+ * Implementa el patrón Active Record para persistencia.
+ * 
+ * RELACIÓN CON POO:
+ * - @Entity: Convierte la clase en una entidad persistente
+ * - Encapsulación: Campos privados con getters/setters públicos
+ * - Builder Pattern: Constructor con valores por defecto
+ * - Observer Pattern: @PreUpdate se ejecuta automáticamente
+ * - Domain Model: Representa un concepto del dominio de negocio
+ * 
+ * RELACIÓN CON SQL:
+ * - @Entity: Genera una tabla SQL llamada "producto"
+ * - @Id + @GeneratedValue: Crea columna ID auto-incremental
+ * - Cada campo se mapea a una columna en la tabla
+ * - @PreUpdate: Ejecuta UPDATE automático antes de guardar
+ */
+@Entity  // ANOTACIÓN JPA: Marca como entidad de base de datos
+@Table(name = "producto")  // ANOTACIÓN JPA: Nombre de la tabla SQL
+public class Producto {
+    
+    @Id  // ANOTACIÓN JPA: Clave primaria
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // ANOTACIÓN JPA: Auto-incremento
+    private Long id;
+    
+    private String nombre;
+    private Double precio;
+    private String comentario;
+    private String categoria;
+    private String unidad;
+    private Boolean activo = true;  // VALOR POR DEFECTO
+    private LocalDateTime creado = LocalDateTime.now();  // TIMESTAMP AUTOMÁTICO
+    private LocalDateTime actualizado;
+    
+    // CONSTRUCTOR POR DEFECTO - REQUERIDO POR JPA
+    public Producto() {}
+    
+    // CONSTRUCTOR CON PARÁMETROS - PATRÓN BUILDER
+    public Producto(String nombre, Double precio, String comentario, 
+                   String categoria, String unidad) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.comentario = comentario;
+        this.categoria = categoria;
+        this.unidad = unidad;
+        this.activo = true;
+        this.creado = LocalDateTime.now();
+    }
+    
+    // GETTERS Y SETTERS - ENCAPSULACIÓN
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    
+    // ... más getters y setters
+    
+    // MÉTODO CALLBACK - PATRÓN OBSERVER
+    @PreUpdate  // ANOTACIÓN JPA: Se ejecuta antes de actualizar
+    public void preUpdate() {
+        this.actualizado = LocalDateTime.now();
+    }
+}
+                </div>
+
+                <h3>🎮 Controlador REST - ProductoController.java</h3>
+                <div class="code-block">
+package com.casuarinas.app.web;
+
+import com.casuarinas.app.model.Producto;
+import com.casuarinas.app.repo.ProductoRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+/**
+ * CONTROLADOR REST PRODUCTO - PROGRAMACIÓN ORIENTADA A OBJETOS
+ * 
+ * Esta clase maneja las peticiones HTTP relacionadas con productos.
+ * Implementa el patrón MVC (Model-View-Controller).
+ * 
+ * RELACIÓN CON POO:
+ * - @RestController: Convierte la clase en un controlador REST
+ * - Dependency Injection: @Autowired inyecta dependencias
+ * - Encapsulación: Métodos privados para lógica interna
+ * - Polimorfismo: Implementa interfaz de controlador REST
+ * - Separation of Concerns: Solo maneja peticiones HTTP
+ * 
+ * RELACIÓN CON SQL:
+ * - Cada endpoint ejecuta consultas SQL a través del repositorio
+ * - @GetMapping: Genera consultas SELECT SQL
+ * - @PostMapping: Genera consultas INSERT SQL
+ * - @PutMapping: Genera consultas UPDATE SQL
+ * - @DeleteMapping: Genera consultas DELETE SQL
+ */
+@RestController  // ANOTACIÓN SPRING: Controlador REST
+@RequestMapping("/api/productos")  // ANOTACIÓN SPRING: Ruta base
+public class ProductoController {
+    
+    @Autowired  // ANOTACIÓN SPRING: Inyección de dependencias
+    private ProductoRepo repo;
+    
+    /**
+     * MÉTODO GET - OPERACIÓN CRUD (READ)
+     * Maneja peticiones GET a /api/productos
+     */
+    @GetMapping  // ANOTACIÓN SPRING: Mapea peticiones GET
+    public List&lt;Producto&gt; getAll(
+        @RequestParam(required = false) String nombre,
+        @RequestParam(required = false) String categoria
+    ) {
+        // LÓGICA DE NEGOCIO - POO
+        if (nombre != null && !nombre.isEmpty() && 
+            categoria != null && !categoria.isEmpty()) {
+            // CONSULTA SQL: SELECT * FROM producto WHERE nombre LIKE '%?%' AND categoria = ? AND activo = true
+            return repo.findByNombreContainingIgnoreCaseAndCategoriaAndActivoTrue(nombre, categoria);
+        } else if (nombre != null && !nombre.isEmpty()) {
+            // CONSULTA SQL: SELECT * FROM producto WHERE nombre LIKE '%?%' AND activo = true
+            return repo.findByNombreContainingIgnoreCaseAndActivoTrue(nombre);
+        } else if (categoria != null && !categoria.isEmpty()) {
+            // CONSULTA SQL: SELECT * FROM producto WHERE categoria = ? AND activo = true
+            return repo.findByCategoriaAndActivoTrue(categoria);
+        } else {
+            // CONSULTA SQL: SELECT * FROM producto WHERE activo = true
+            return repo.findByActivoTrue();
+        }
+    }
+    
+    /**
+     * MÉTODO POST - OPERACIÓN CRUD (CREATE)
+     * Maneja peticiones POST a /api/productos
+     */
+    @PostMapping  // ANOTACIÓN SPRING: Mapea peticiones POST
+    public Producto create(@RequestBody Producto producto) {
+        // CONSULTA SQL: INSERT INTO producto (nombre, precio, ...) VALUES (?, ?, ...)
+        return repo.save(producto);
+    }
+    
+    /**
+     * MÉTODO PUT - OPERACIÓN CRUD (UPDATE)
+     * Maneja peticiones PUT a /api/productos/{id}
+     */
+    @PutMapping("/{id}")  // ANOTACIÓN SPRING: Mapea peticiones PUT con parámetro
+    public Producto update(@PathVariable Long id, @RequestBody Producto producto) {
+        producto.setId(id);
+        // CONSULTA SQL: UPDATE producto SET nombre = ?, precio = ?, ... WHERE id = ?
+        return repo.save(producto);
+    }
+    
+    /**
+     * MÉTODO DELETE - OPERACIÓN CRUD (DELETE)
+     * Maneja peticiones DELETE a /api/productos/{id}
+     */
+    @DeleteMapping("/{id}")  // ANOTACIÓN SPRING: Mapea peticiones DELETE
+    public void delete(@PathVariable Long id) {
+        // CONSULTA SQL: DELETE FROM producto WHERE id = ?
+        repo.deleteById(id);
+    }
+}
+                </div>
+
+                <h3>🗃️ Repositorio - ProductoRepo.java</h3>
+                <div class="code-block">
+package com.casuarinas.app.repo;
+
+import com.casuarinas.app.model.Producto;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
+/**
+ * REPOSITORIO PRODUCTO - PROGRAMACIÓN ORIENTADA A OBJETOS
+ * 
+ * Esta interfaz define las operaciones de acceso a datos para productos.
+ * Implementa el patrón Repository para abstraer la lógica de persistencia.
+ * 
+ * RELACIÓN CON POO:
+ * - Herencia: Extiende JpaRepository para obtener funcionalidad base
+ * - Polimorfismo: Implementa diferentes métodos de consulta
+ * - Encapsulación: Abstrae la complejidad de acceso a datos
+ * - Interface Segregation: Define solo los métodos necesarios
+ * 
+ * RELACIÓN CON SQL:
+ * - Spring Data JPA genera automáticamente consultas SQL
+ * - Query Methods: Los nombres de métodos se convierten en consultas
+ * - JDBC: Utiliza JDBC internamente para conectar con la base de datos
+ * - Transaction Management: Maneja transacciones automáticamente
+ */
+@Repository  // ANOTACIÓN SPRING: Marca como componente de acceso a datos
+public interface ProductoRepo extends JpaRepository&lt;Producto, Long&gt; {
+    
+    /**
+     * MÉTODO DE CONSULTA PERSONALIZADO - PROGRAMACIÓN ORIENTADA A OBJETOS
+     * 
+     * Spring Data JPA genera automáticamente la implementación de este método
+     * basándose en el nombre del método.
+     * 
+     * RELACIÓN CON POO:
+     * - Query Method: El nombre del método define la consulta
+     * - Polimorfismo: Diferentes implementaciones según el tipo de consulta
+     * - Encapsulación: Oculta la complejidad de generación de consultas
+     * 
+     * RELACIÓN CON SQL:
+     * - Genera: SELECT * FROM producto WHERE nombre LIKE '%?%' AND activo = true
+     * - Parámetros: Se mapean automáticamente a la consulta SQL
+     * - Resultado: Lista de productos que coinciden con los criterios
+     */
+    List&lt;Producto&gt; findByNombreContainingIgnoreCaseAndActivoTrue(String nombre);
+    
+    /**
+     * MÉTODO DE CONSULTA POR CATEGORÍA
+     * 
+     * RELACIÓN CON SQL:
+     * - Genera: SELECT * FROM producto WHERE categoria = ? AND activo = true
+     */
+    List&lt;Producto&gt; findByCategoriaAndActivoTrue(String categoria);
+    
+    /**
+     * MÉTODO DE CONSULTA COMBINADA
+     * 
+     * RELACIÓN CON SQL:
+     * - Genera: SELECT * FROM producto WHERE nombre LIKE '%?%' AND categoria = ? AND activo = true
+     */
+    List&lt;Producto&gt; findByNombreContainingIgnoreCaseAndCategoriaAndActivoTrue(String nombre, String categoria);
+    
+    /**
+     * MÉTODO DE CONSULTA SIMPLE
+     * 
+     * RELACIÓN CON SQL:
+     * - Genera: SELECT * FROM producto WHERE activo = true
+     */
+    List&lt;Producto&gt; findByActivoTrue();
+}
+                </div>
+            </div>
+
+            <div id="patrones" class="section">
+                <h2>🎨 6. Patrones de Diseño Implementados</h2>
+                
+                <h3>🏗️ Patrones Creacionales</h3>
+                
+                <div class="concept-box">
+                    <h4>1. 🏭 Factory Method</h4>
+                    <p><strong>Implementación:</strong> @SpringBootApplication actúa como factory para crear beans.</p>
+                    <div class="code-block">
+@SpringBootApplication
+public class App {
+    public static void main(String[] args) {
+        // Spring Factory crea automáticamente:
+        // - ProductoController
+        // - ProductoRepo
+        // - DataSource
+        // - EntityManager
+        SpringApplication.run(App.class, args);
+    }
+}
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4>2. 🏗️ Builder Pattern</h4>
+                    <p><strong>Implementación:</strong> Constructores con parámetros opcionales.</p>
+                    <div class="code-block">
+public class Producto {
+    public Producto(String nombre, Double precio, String comentario, 
+                   String categoria, String unidad) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.comentario = comentario;
+        this.categoria = categoria;
+        this.unidad = unidad;
+        this.activo = true;  // Valor por defecto
+        this.creado = LocalDateTime.now();  // Valor por defecto
+    }
+}
+                    </div>
+                </div>
+
+                <h3>🏛️ Patrones Estructurales</h3>
+                
+                <div class="concept-box">
+                    <h4>1. 💉 Dependency Injection</h4>
+                    <p><strong>Implementación:</strong> @Autowired inyecta dependencias automáticamente.</p>
+                    <div class="code-block">
+@RestController
+public class ProductoController {
+    @Autowired  // Spring inyecta esta dependencia
+    private ProductoRepo repo;
+    
+    // No necesitamos: repo = new ProductoRepoImpl();
+    // Spring lo hace por nosotros
+}
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4>2. 🎯 MVC (Model-View-Controller)</h4>
+                    <p><strong>Implementación:</strong> Separación clara de responsabilidades.</p>
+                    <div class="code-block">
+<strong>Model (Modelo):</strong>
+- Producto.java, Pedido.java, Cliente.java
+- Representan los datos del negocio
+
+<strong>View (Vista):</strong>
+- index.html, admin.html
+- Interfaz de usuario
+
+<strong>Controller (Controlador):</strong>
+- ProductoController.java, PedidoController.java
+- Manejan la lógica de negocio y peticiones HTTP
+                    </div>
+                </div>
+
+                <h3>🎭 Patrones de Comportamiento</h3>
+                
+                <div class="concept-box">
+                    <h4>1. 📚 Repository Pattern</h4>
+                    <p><strong>Implementación:</strong> Abstrae el acceso a datos.</p>
+                    <div class="code-block">
+public interface ProductoRepo extends JpaRepository&lt;Producto, Long&gt; {
+    // Abstrae todas las operaciones de base de datos
+    // Spring genera automáticamente la implementación
+    List&lt;Producto&gt; findByActivoTrue();
+}
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4>2. 👁️ Observer Pattern</h4>
+                    <p><strong>Implementación:</strong> @PreUpdate se ejecuta automáticamente.</p>
+                    <div class="code-block">
+@Entity
+public class Producto {
+    @PreUpdate  // Se ejecuta automáticamente antes de actualizar
+    public void preUpdate() {
+        this.actualizado = LocalDateTime.now();
+    }
+}
+                    </div>
+                </div>
+
+                <h3>🌐 Patrones Web</h3>
+                
+                <div class="concept-box">
+                    <h4>1. 🔄 RESTful API</h4>
+                    <p><strong>Implementación:</strong> Endpoints REST estándar.</p>
+                    <div class="code-block">
+GET    /api/productos      → Obtener todos los productos
+GET    /api/productos/{id} → Obtener producto por ID
+POST   /api/productos      → Crear nuevo producto
+PUT    /api/productos/{id} → Actualizar producto
+DELETE /api/productos/{id} → Eliminar producto
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4>2. 🎨 Frontend-Backend Separation</h4>
+                    <p><strong>Implementación:</strong> Separación clara entre frontend y backend.</p>
+                    <div class="code-block">
+<strong>Frontend (JavaScript):</strong>
+- Hace peticiones AJAX a la API REST
+- Maneja la interfaz de usuario
+- Procesa respuestas JSON
+
+<strong>Backend (Spring Boot):</strong>
+- Proporciona API REST
+- Maneja la lógica de negocio
+- Accede a la base de datos
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎓 Resumen de Aprendizajes</h2>
+                
+                <div class="concept-box">
+                    <h4>✅ Conceptos de POO Aplicados</h4>
+                    <ul>
+                        <li><strong>Encapsulación:</strong> Campos privados con getters/setters</li>
+                        <li><strong>Herencia:</strong> Repositorios extienden JpaRepository</li>
+                        <li><strong>Polimorfismo:</strong> Controladores implementan interfaces REST</li>
+                        <li><strong>Abstracción:</strong> Anotaciones ocultan complejidad</li>
+                        <li><strong>Composición:</strong> Clases compuestas por otras clases</li>
+                    </ul>
+                </div>
+
+                <div class="concept-box">
+                    <h4>✅ Conceptos de SQL Aplicados</h4>
+                    <ul>
+                        <li><strong>DDL:</strong> Creación automática de tablas</li>
+                        <li><strong>DML:</strong> Operaciones INSERT, UPDATE, DELETE</li>
+                        <li><strong>DQL:</strong> Consultas SELECT con filtros</li>
+                        <li><strong>ORM:</strong> Mapeo objeto-relacional automático</li>
+                        <li><strong>Transacciones:</strong> Gestión automática de transacciones</li>
+                    </ul>
+                </div>
+
+                <div class="concept-box">
+                    <h4>✅ Patrones de Diseño Implementados</h4>
+                    <ul>
+                        <li><strong>Factory:</strong> @SpringBootApplication</li>
+                        <li><strong>Dependency Injection:</strong> @Autowired</li>
+                        <li><strong>MVC:</strong> Separación Model-View-Controller</li>
+                        <li><strong>Repository:</strong> Abstracción de acceso a datos</li>
+                        <li><strong>Observer:</strong> @PreUpdate callbacks</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

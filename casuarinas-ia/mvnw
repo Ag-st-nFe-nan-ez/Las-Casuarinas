@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# ----------------------------------------------------------------------------
+# Maven Wrapper Startup Script for Unix
+# ----------------------------------------------------------------------------
+
+MVNW_CMD=".mvn/wrapper/mvnw"
+if [ -f "$MVNW_CMD" ]; then
+  exec sh "$MVNW_CMD" "$@"
+else
+  BASEDIR=$(dirname "$0")
+  if [ -f "$BASEDIR/.mvn/wrapper/mvnw" ]; then
+    exec sh "$BASEDIR/.mvn/wrapper/mvnw" "$@"
+  else
+    echo "Cannot find .mvn/wrapper/mvnw in project directory or parent directories"
+    exit 1
+  fi
+fi

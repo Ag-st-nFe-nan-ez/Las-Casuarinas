@@ -1,0 +1,463 @@
+# SISTEMA LAS CASUARINAS IA - CÓDIGO COMPLETO
+# Proyecto Spring Boot con explicaciones de POO y SQL
+
+## 1. ESTRUCTURA DEL PROYECTO
+src/main/java/com/casuarinas/app/
+├── App.java (Clase principal)
+├── model/ (Entidades)
+│   ├── Producto.java
+│   ├── Pedido.java
+│   ├── Cliente.java
+│   └── [Productos específicos: Miel.java, Huevos12.java, etc.]
+├── repo/ (Repositorios)
+│   ├── ProductoRepo.java
+│   ├── PedidoRepo.java
+│   └── ClienteRepo.java
+├── web/ (Controladores REST)
+│   ├── ProductoController.java
+│   ├── PedidoController.java
+│   └── ClienteController.java
+└── boot/ (Configuración)
+    └── DataLoader.java
+
+src/main/resources/
+├── application.properties
+└── static/
+    ├── index.html
+    ├── admin.html
+    ├── cliente.html
+    └── documentacion.html
+
+## 2. CÓDIGO PRINCIPAL
+
+### App.java - Clase Principal Spring Boot
+package com.casuarinas.app;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * CLASE PRINCIPAL SPRING BOOT - PROGRAMACIÓN ORIENTADA A OBJETOS
+ * 
+ * RELACIÓN CON POO:
+ * - @SpringBootApplication: Configuración automática (patrón Factory)
+ * - Singleton: Solo una instancia de la aplicación
+ * - Main Method: Punto de entrada estático
+ * 
+ * RELACIÓN CON SQL:
+ * - Configura automáticamente conexión H2
+ * - Inicializa JPA/Hibernate para mapeo objeto-relacional
+ * - Crea tablas SQL automáticamente
+ */
+@SpringBootApplication
+public class App {
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args);
+    }
+}
+
+### Producto.java - Entidad Base
+package com.casuarinas.app.model;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+/**
+ * ENTIDAD PRODUCTO - PROGRAMACIÓN ORIENTADA A OBJETOS
+ * 
+ * RELACIÓN CON POO:
+ * - @Entity: Convierte clase en entidad persistente (patrón Active Record)
+ * - Encapsulación: Campos privados con getters/setters públicos
+ * - Observer Pattern: @PreUpdate se ejecuta automáticamente
+ * - Domain Model: Representa concepto del dominio de negocio
+ * 
+ * RELACIÓN CON SQL:
+ * - @Entity: Genera tabla SQL llamada "producto"
+ * - @Id + @GeneratedValue: Crea columna ID auto-incremental
+ * - Cada campo se mapea a columna en la tabla
+ * - @PreUpdate: Ejecuta UPDATE automático antes de guardar
+ */
+@Entity
+@Table(name = "producto")
+public class Producto {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String nombre;
+    private Double precio;
+    private String comentario;
+    private String categoria;
+    private String unidad;
+    private Boolean activo = true;
+    private LocalDateTime creado = LocalDateTime.now();
+    private LocalDateTime actualizado;
+    
+    // Constructores
+    public Producto() {}
+    
+    public Producto(String nombre, Double precio, String comentario, 
+                   String categoria, String unidad) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.comentario = comentario;
+        this.categoria = categoria;
+        this.unidad = unidad;
+        this.activo = true;
+        this.creado = LocalDateTime.now();
+    }
+    
+    // Getters y Setters (Encapsulación)
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    
+    public Double getPrecio() { return precio; }
+    public void setPrecio(Double precio) { this.precio = precio; }
+    
+    public String getComentario() { return comentario; }
+    public void setComentario(String comentario) { this.comentario = comentario; }
+    
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
+    
+    public String getUnidad() { return unidad; }
+    public void setUnidad(String unidad) { this.unidad = unidad; }
+    
+    public Boolean getActivo() { return activo; }
+    public void setActivo(Boolean activo) { this.activo = activo; }
+    
+    public LocalDateTime getCreado() { return creado; }
+    public void setCreado(LocalDateTime creado) { this.creado = creado; }
+    
+    public LocalDateTime getActualizado() { return actualizado; }
+    public void setActualizado(LocalDateTime actualizado) { this.actualizado = actualizado; }
+    
+    // Método Callback - Patrón Observer
+    @PreUpdate
+    public void preUpdate() {
+        this.actualizado = LocalDateTime.now();
+    }
+}
+
+### ProductoRepo.java - Repositorio
+package com.casuarinas.app.repo;
+
+import com.casuarinas.app.model.Producto;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
+/**
+ * REPOSITORIO PRODUCTO - PROGRAMACIÓN ORIENTADA A OBJETOS
+ * 
+ * RELACIÓN CON POO:
+ * - Herencia: Extiende JpaRepository para obtener funcionalidad base
+ * - Polimorfismo: Diferentes métodos de consulta
+ * - Encapsulación: Abstrae complejidad de acceso a datos
+ * - Repository Pattern: Patrón de diseño para acceso a datos
+ * 
+ * RELACIÓN CON SQL:
+ * - Spring Data JPA genera automáticamente consultas SQL
+ * - Query Methods: Nombres de métodos se convierten en consultas
+ * - JDBC: Utiliza JDBC internamente para conectar con BD
+ * - Transaction Management: Maneja transacciones automáticamente
+ */
+@Repository
+public interface ProductoRepo extends JpaRepository<Producto, Long> {
+    
+    // Métodos de consulta personalizados
+    List<Producto> findByNombreContainingIgnoreCaseAndActivoTrue(String nombre);
+    List<Producto> findByCategoriaAndActivoTrue(String categoria);
+    List<Producto> findByNombreContainingIgnoreCaseAndCategoriaAndActivoTrue(String nombre, String categoria);
+    List<Producto> findByActivoTrue();
+}
+
+### ProductoController.java - Controlador REST
+package com.casuarinas.app.web;
+
+import com.casuarinas.app.model.Producto;
+import com.casuarinas.app.repo.ProductoRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+/**
+ * CONTROLADOR REST PRODUCTO - PROGRAMACIÓN ORIENTADA A OBJETOS
+ * 
+ * RELACIÓN CON POO:
+ * - @RestController: Convierte clase en controlador REST (patrón Controller)
+ * - Dependency Injection: @Autowired inyecta dependencias
+ * - Encapsulación: Métodos privados para lógica interna
+ * - Polimorfismo: Implementa interfaz de controlador REST
+ * - MVC Pattern: Separación Model-View-Controller
+ * 
+ * RELACIÓN CON SQL:
+ * - Cada endpoint ejecuta consultas SQL a través del repositorio
+ * - @GetMapping: Genera consultas SELECT SQL
+ * - @PostMapping: Genera consultas INSERT SQL
+ * - @PutMapping: Genera consultas UPDATE SQL
+ * - @DeleteMapping: Genera consultas DELETE SQL
+ */
+@RestController
+@RequestMapping("/api/productos")
+public class ProductoController {
+    
+    @Autowired
+    private ProductoRepo repo;
+    
+    @GetMapping
+    public List<Producto> getAll(
+        @RequestParam(required = false) String nombre,
+        @RequestParam(required = false) String categoria
+    ) {
+        if (nombre != null && !nombre.isEmpty() && 
+            categoria != null && !categoria.isEmpty()) {
+            return repo.findByNombreContainingIgnoreCaseAndCategoriaAndActivoTrue(nombre, categoria);
+        } else if (nombre != null && !nombre.isEmpty()) {
+            return repo.findByNombreContainingIgnoreCaseAndActivoTrue(nombre);
+        } else if (categoria != null && !categoria.isEmpty()) {
+            return repo.findByCategoriaAndActivoTrue(categoria);
+        } else {
+            return repo.findByActivoTrue();
+        }
+    }
+    
+    @GetMapping("/{id}")
+    public Optional<Producto> getById(@PathVariable Long id) {
+        return repo.findById(id);
+    }
+    
+    @PostMapping
+    public Producto create(@RequestBody Producto producto) {
+        return repo.save(producto);
+    }
+    
+    @PutMapping("/{id}")
+    public Producto update(@PathVariable Long id, @RequestBody Producto producto) {
+        producto.setId(id);
+        return repo.save(producto);
+    }
+    
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        repo.deleteById(id);
+    }
+    
+    @GetMapping("/admin")
+    public List<Producto> getAllForAdmin() {
+        return repo.findAll();
+    }
+}
+
+### application.properties - Configuración
+# Configuración del servidor
+server.port=8080
+
+# Configuración de base de datos H2
+spring.datasource.url=jdbc:h2:file:./data/casuarinas-db
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+# Configuración JPA/Hibernate
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# Configuración consola H2
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2
+
+### pom.xml - Configuración Maven
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+        <relativePath/>
+    </parent>
+    
+    <groupId>com.casuarinas.app</groupId>
+    <artifactId>casuarinas-ia</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>casuarinas-ia</name>
+    <description>Proyecto Las Casuarinas - Sistema de gestión de productos</description>
+    
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+    
+    <dependencies>
+        <!-- Spring Boot Starter Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
+        <!-- Spring Boot Starter Data JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        
+        <!-- H2 Database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <!-- Spring Boot Starter Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
+## 3. CONCEPTOS DE PROGRAMACIÓN ORIENTADA A OBJETOS IMPLEMENTADOS
+
+### 1. ENCAPSULACIÓN
+- Campos privados con getters/setters públicos
+- Control de acceso a los datos internos
+- Ocultación de implementación
+
+### 2. HERENCIA
+- ProductoRepo extiende JpaRepository
+- Reutilización de código base
+- Extensibilidad del sistema
+
+### 3. POLIMORFISMO
+- Controladores implementan interfaces REST
+- Mismo método puede comportarse diferente según contexto
+- Flexibilidad en el código
+
+### 4. ABSTRACCIÓN
+- Anotaciones @Entity, @RestController ocultan complejidad
+- Spring Boot maneja configuración automáticamente
+- Simplificación del desarrollo
+
+### 5. PATRONES DE DISEÑO
+- **Factory**: @SpringBootApplication crea beans
+- **Dependency Injection**: @Autowired inyecta dependencias
+- **MVC**: Separación Model-View-Controller
+- **Repository**: Abstracción de acceso a datos
+- **Observer**: @PreUpdate callbacks automáticos
+
+## 4. CONCEPTOS DE BASE DE DATOS SQL IMPLEMENTADOS
+
+### 1. DDL (Data Definition Language)
+- CREATE TABLE automático por Hibernate
+- ALTER TABLE para modificaciones
+- Estructura de base de datos
+
+### 2. DML (Data Manipulation Language)
+- INSERT: Crear nuevos registros
+- UPDATE: Modificar registros existentes
+- DELETE: Eliminar registros
+
+### 3. DQL (Data Query Language)
+- SELECT con filtros WHERE
+- Consultas complejas con JOIN
+- Ordenamiento y agrupación
+
+### 4. ORM (Object-Relational Mapping)
+- Mapeo automático objeto-tabla
+- JPA/Hibernate maneja SQL
+- Transacciones automáticas
+
+## 5. FUNCIONALIDADES DEL SISTEMA
+
+### Panel de Administración
+- Gestión de productos (CRUD completo)
+- Activación/desactivación de productos
+- Filtros avanzados de pedidos
+- Visualización de estadísticas
+
+### Panel de Cliente
+- Catálogo de productos activos
+- Carrito de compras
+- Formulario de pedido
+- Registro de cliente
+
+### API REST
+- Endpoints para productos, pedidos y clientes
+- Filtros por nombre, categoría, localidad
+- Operaciones CRUD completas
+- Respuestas JSON
+
+## 6. TECNOLOGÍAS UTILIZADAS
+
+### Backend
+- Java 17
+- Spring Boot 3.2.5
+- Spring Data JPA
+- Hibernate ORM
+- H2 Database
+- Maven
+
+### Frontend
+- HTML5
+- CSS3
+- JavaScript ES6+
+- Fetch API
+
+### Base de Datos
+- H2 (In-memory + File-based)
+- SQL (DDL, DML, DQL)
+- JPA/Hibernate
+
+## 7. INSTRUCCIONES DE USO
+
+### Para ejecutar el proyecto:
+1. Asegurar Java 17 instalado
+2. Ejecutar: mvn spring-boot:run
+3. Abrir navegador en: http://localhost:8080
+
+### Accesos:
+- Página principal: http://localhost:8080
+- Panel admin: http://localhost:8080/admin.html (contraseña: Nana.1234)
+- Panel cliente: http://localhost:8080/cliente.html
+- Documentación: http://localhost:8080/documentacion.html
+- Consola H2: http://localhost:8080/h2
+
+### Funcionalidades principales:
+- Gestión completa de productos
+- Sistema de pedidos con filtros
+- Activación/desactivación de productos
+- Interfaz responsive y moderna
+- Documentación técnica completa
+
+## 8. EXPLICACIÓN DE CONCEPTOS TÉCNICOS
+
+### Spring Boot
+Framework que simplifica el desarrollo de aplicaciones Java con configuración automática, servidor embebido y starter dependencies.
+
+### JPA/Hibernate
+ORM que mapea objetos Java a tablas de base de datos, generando SQL automáticamente y manejando transacciones.
+
+### REST API
+Arquitectura web que utiliza HTTP para comunicación cliente-servidor con operaciones CRUD estándar.
+
+### MVC Pattern
+Separación de responsabilidades: Model (datos), View (interfaz), Controller (lógica de negocio).
+
+Este sistema demuestra la implementación práctica de conceptos fundamentales de programación orientada a objetos y bases de datos SQL en un proyecto real de Spring Boot.
